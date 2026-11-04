@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Petualangan Keliling Bangun Datar</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg1:#6fdcff;--bg2:#00a2ff;--bg3:#0062d1;--ink:#06407d;--card:rgba(255,255,255,.94);--accent:#0090ff;--sun:#ffd93d;--ok:#1fb86b;--bad:#ff6b6b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#2bb5e8;--bg2:#0080e0;--bg3:#00428f}}
+:root[data-theme="dark"]{--bg1:#2bb5e8;--bg2:#0080e0;--bg3:#00428f}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'Fredoka','Comic Sans MS','Trebuchet MS',system-ui,sans-serif;background:linear-gradient(var(--bg1),var(--bg2) 45%,var(--bg3));background-attachment:fixed;min-height:100vh;color:var(--ink);overflow-x:hidden}
+#sea{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.fish{position:absolute;left:-12vw;font-size:34px;animation:swim linear infinite}
+.fish i{display:inline-block;font-style:normal;transform:scaleX(-1)}
+@keyframes swim{to{transform:translateX(125vw)}}
+.bub{position:absolute;bottom:-30px;border-radius:50%;background:rgba(255,255,255,.35);border:2px solid rgba(255,255,255,.7);animation:rise linear infinite}
+@keyframes rise{to{transform:translateY(-115vh)}}
+.weeds{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-around;font-size:44px;opacity:.9}
+.weeds span{transform-origin:bottom;animation:sway 3s ease-in-out infinite alternate}
+.weeds span:nth-child(even){animation-delay:-1.4s}
+@keyframes sway{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}
+#app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:14px 14px 96px}
+.slide{display:none;background:var(--card);border-radius:28px;padding:22px;box-shadow:0 10px 30px rgba(0,60,140,.35);border:4px solid #fff}
+.slide.on{display:block;animation:pop .5s ease}
+@keyframes pop{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:none}}
+h1,h2{margin:0 0 10px;line-height:1.15}
+h1{font-size:clamp(26px,6vw,42px);color:#0072e6}
+h2{font-size:clamp(22px,5vw,30px);color:#0072e6}
+.tag{display:inline-block;background:var(--sun);color:#7a4b00;border-radius:99px;padding:4px 14px;font-weight:700;font-size:14px}
+.hero{text-align:center}
+.big{font-size:70px;animation:bob 2.5s ease-in-out infinite;display:inline-block}
+@keyframes bob{50%{transform:translateY(-12px) rotate(4deg)}}
+.id{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0;text-align:left}
+.id div{background:#e6f6ff;border-radius:16px;padding:10px 14px}
+.id small{display:block;color:#4a7fb0;font-size:13px}
+input[type=text],input[type=number],textarea{font:inherit;border:3px solid #9bd8ff;border-radius:14px;padding:10px 14px;width:100%;color:var(--ink);background:#fff}
+button{font:inherit;cursor:pointer;border:0;border-radius:99px;padding:12px 24px;font-weight:700;color:#fff;background:linear-gradient(#27b3ff,#0077e6);box-shadow:0 5px 0 #0058b0;transition:transform .15s}
+button:hover{transform:translateY(-2px) scale(1.04)}
+button:active{transform:translateY(3px);box-shadow:0 2px 0 #0058b0}
+button.alt{background:linear-gradient(#ffe36b,#ffb400);color:#6a4200;box-shadow:0 5px 0 #c98700}
+.goal{display:flex;gap:12px;align-items:center;background:#e6f6ff;border-radius:18px;padding:12px 16px;margin:10px 0;font-size:18px}
+.goal b{font-size:32px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:12px}
+.fc{background:#fff;border:3px solid #bfe6ff;border-radius:20px;padding:10px;text-align:center;transition:.2s;cursor:pointer}
+.fc:hover,.fc.hot{transform:translateY(-5px) rotate(-1deg);border-color:#ffb400;background:#fffbe6}
+.fc svg{width:100%;max-width:170px;height:auto}
+.fc .f{font-weight:700;font-size:18px;color:#0072e6}
+.note{background:#fff6cf;border-left:8px solid var(--sun);border-radius:14px;padding:12px 16px;margin:10px 0;font-size:18px}
+svg text{font-family:inherit;font-weight:700;font-size:9px;fill:#06407d;text-anchor:middle}
+.shp{fill:#ffe27a;stroke:#ff8a00;stroke-width:3;stroke-linejoin:round}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chip{padding:8px 14px;box-shadow:0 3px 0 #0058b0;font-size:15px}
+.chip.sel{background:linear-gradient(#ffe36b,#ffb400);color:#6a4200;box-shadow:0 3px 0 #c98700}
+.lab{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:center}
+@media(max-width:620px){.lab{grid-template-columns:1fr}}
+.lab svg{width:100%;max-width:300px;margin:auto;display:block;background:#e6f6ff;border-radius:20px}
+input[type=range]{width:100%;accent-color:#ff8a00}
+.res{background:#e6f6ff;border-radius:16px;padding:12px;font-size:20px;font-weight:700;text-align:center;margin-top:10px}
+.bar{height:14px;background:#cdeeff;border-radius:99px;overflow:hidden;margin:6px 0 14px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#27b3ff,#ffd93d);transition:width .5s}
+.qm{display:grid;grid-template-columns:1fr 1.2fr;gap:16px;align-items:center}
+@media(max-width:620px){.qm{grid-template-columns:1fr}}
+.lc{background:#e6f6ff;border:4px dashed #27b3ff;border-radius:22px;padding:12px;text-align:center;font-size:18px}
+.lc svg{width:100%;max-width:210px}
+.opts{display:grid;gap:10px}
+.opt{background:#fff;color:var(--ink);border:3px solid #9bd8ff;box-shadow:0 4px 0 #9bd8ff;border-radius:18px;font-size:19px;text-align:left}
+.opt:hover{background:#fffbe6;border-color:#ffb400}
+.opt.ok{background:#d6f8e6;border-color:var(--ok);box-shadow:0 4px 0 var(--ok);animation:pulse .6s}
+.opt.no{background:#ffe0e0;border-color:var(--bad);box-shadow:0 4px 0 var(--bad);animation:shake .4s}
+.opt.link{transform:translateX(-14px)}
+@keyframes pulse{50%{transform:scale(1.07)}}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.fb{margin-top:14px;border-radius:18px;padding:14px 16px;font-size:18px;display:none}
+.fb.ok{display:block;background:#d6f8e6;color:#0b5b34;animation:pop .4s}
+.fb.no{display:block;background:#fff0e0;color:#8a3b00;animation:pop .4s}
+.stars{font-size:44px;text-align:center}
+.emo{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:10px 0}
+.emo button{font-size:17px}
+#nav{position:fixed;left:0;right:0;bottom:0;z-index:5;display:flex;justify-content:center;align-items:center;gap:10px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(0,70,160,.55);backdrop-filter:blur(8px)}
+#dots{display:flex;gap:7px}
+#dots i{width:12px;height:12px;border-radius:50%;background:#fff6;transition:.3s}
+#dots i.on{background:var(--sun);transform:scale(1.4)}
+#nav button{padding:9px 18px}
+.confetti{position:fixed;top:-20px;font-size:26px;z-index:9;pointer-events:none;animation:fall 2.5s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+</style>
+</head>
+<body>
+<div id="sea"><div class="weeds"><span>🌿</span><span>🪸</span><span>🌿</span><span>🐚</span><span>🪸</span><span>🌿</span><span>⭐</span></div></div>
+
+<div id="app">
+<!-- 1 Pembuka -->
+<section class="slide hero on">
+  <span class="tag">Matematika • Kelas 5 SD</span>
+  <div class="big">🐙</div>
+  <h1>Petualangan Keliling Bangun Datar di Dasar Laut 🌊</h1>
+  <p style="font-size:19px">Halo, penjelajah laut! 🐠 Ayo menyelam bersama Kakak Ikan dan temukan rahasia rumus keliling!</p>
+  <div class="id">
+    <div><small>Mata Pelajaran</small>Matematika</div>
+    <div><small>Kelas</small>5 SD</div>
+    <div><small>Topik</small>Keliling Bangun Datar</div>
+  </div>
+  <label style="font-weight:700">Siapa namamu, penjelajah? 🐬</label>
+  <input type="text" id="nm" placeholder="Tulis namamu di sini..." maxlength="30" style="margin:8px 0 16px">
+  <button onclick="start()">Mulai Menyelam 🤿</button>
+</section>
+
+<!-- 2 Tujuan -->
+<section class="slide">
+  <h2>🎯 Tujuan Petualangan Kita</h2>
+  <p style="font-size:19px"><span id="hi">Hai</span>! Setelah menyelam hari ini, kamu akan bisa:</p>
+  <div class="goal"><b>🐚</b><span><b style="font-size:20px">Menentukan rumus keliling setiap bangun datar</b> — persegi, persegi panjang, segitiga, jajar genjang, belah ketupat, layang-layang, trapesium, dan lingkaran.</span></div>
+  <div class="goal"><b>🦀</b><span>Menghitung keliling dengan rumus yang tepat.</span></div>
+  <div class="goal"><b>🐢</b><span>Menjelaskan alasan di balik setiap rumus.</span></div>
+  <div class="note">🧭 Peta petualangan: Materi ➜ Ayo Coba ➜ Kuis Mencocokkan ➜ Refleksi</div>
+</section>
+
+<!-- 3 Materi -->
+<section class="slide">
+  <h2>📘 Materi Inti: Apa itu Keliling?</h2>
+  <div class="lab">
+    <svg viewBox="0 0 140 100"><rect class="shp" x="20" y="25" width="100" height="50" rx="3"/><text x="70" y="55" style="font-size:20px">
+      <animateMotion dur="6s" repeatCount="indefinite" path="M-50,-30 H50 V20 H-50 Z" rotate="0"/>🐠</text></svg>
+    <div>
+      <div class="note"><b>Keliling</b> adalah panjang garis yang mengelilingi tepi bangun datar. Caranya: <b>jumlahkan semua sisinya!</b></div>
+      <p style="margin:0;font-size:17px">Lihat, Kakak Ikan berenang satu putaran penuh mengitari tepi. Jarak satu putaran itulah keliling! 🏊</p>
+    </div>
+  </div>
+  <h2 style="margin-top:18px;font-size:22px">✨ Rumus tiap bangun datar (ketuk kartunya!)</h2>
+  <div class="grid" id="mat"></div>
+  <div class="note" id="mnote">Ketuk sebuah kartu untuk melihat alasan rumusnya. 🔍</div>
+</section>
+
+<!-- 4 Aktivitas -->
+<section class="slide">
+  <h2>🧪 Aktivitas: Laboratorium Laut</h2>
+  <p style="margin:0 0 6px;font-size:18px">Pilih bangun, geser panjang sisinya, lalu <b>tebak kelilingnya</b> sebelum melihat hasilnya! 🐡</p>
+  <div class="chips" id="chips"></div>
+  <div class="lab">
+    <svg id="labsvg" viewBox="0 0 140 100"></svg>
+    <div>
+      <div id="sliders"></div>
+      <label style="font-weight:700">Tebakanku (cm):</label>
+      <div style="display:flex;gap:8px;margin-top:6px"><input type="number" step="any" id="guess" placeholder="?"><button class="alt" onclick="chk()">Cek</button></div>
+      <div id="gfb" style="margin-top:8px;font-size:17px;font-weight:600"></div>
+    </div>
+  </div>
+  <div class="res" id="labres"></div>
+</section>
+
+<!-- 5 Kuis -->
+<section class="slide">
+  <h2>🎮 Kuis Mencocokkan</h2>
+  <div style="display:flex;justify-content:space-between;font-weight:700"><span id="qn">Soal 1 dari 10</span><span id="qs">⭐ 0</span></div>
+  <div class="bar"><i id="qb"></i></div>
+  <p id="qp" style="font-size:19px;margin:0 0 10px"></p>
+  <div class="qm">
+    <div class="lc" id="qc"></div>
+    <div class="opts" id="qo"></div>
+  </div>
+  <div class="fb" id="fb"></div>
+  <div style="margin-top:14px;text-align:right"><button id="qnext" class="alt" style="display:none" onclick="nextQ()">Soal berikutnya ➜</button></div>
+</section>
+
+<!-- 6 Refleksi -->
+<section class="slide" id="rs"></section>
+</div>
+
+<div id="nav">
+  <button onclick="go(cur-1)" aria-label="Kembali">⬅</button>
+  <div id="dots"><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+  <button onclick="go(cur+1)" aria-label="Lanjut">➡</button>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+let cur=0,name='',labKey='persegi',labV=[5];
+const fmt=n=>Number(n.toFixed(2)).toLocaleString('id-ID');
+const SH={
+ persegi:{n:'Persegi',e:'🟦',pts:'40,15 100,15 100,75 40,75',lp:[[70,11],[111,48],[70,88],[29,48]],ls:['s','s','s','s'],sl:['s'],d:[5],sv:v=>[v[0],v[0],v[0],v[0]],f:'K = 4 × s',w:'Keempat sisinya sama panjang, jadi 4 × s.'},
+ persegipanjang:{n:'Persegi Panjang',e:'🟩',pts:'20,25 120,25 120,75 20,75',lp:[[70,20],[129,52],[70,90],[11,52]],ls:['p','l','p','l'],sl:['p','l'],d:[8,4],sv:v=>[v[0],v[1],v[0],v[1]],f:'K = 2 × (p + l)',w:'Sisi berhadapan sama panjang: p + l + p + l = 2 × (p + l).'},
+ segitiga:{n:'Segitiga',e:'🔺',pts:'70,10 125,85 15,85',lp:[[108,40],[70,96],[32,40]],ls:['a','b','c'],sl:['a','b','c'],d:[5,6,7],sv:v=>v,f:'K = a + b + c',w:'Jumlahkan ketiga sisinya.'},
+ jajargenjang:{n:'Jajar Genjang',e:'🔷',pts:'40,20 125,20 100,80 15,80',lp:[[82,14],[122,52],[58,92],[20,52]],ls:['a','b','a','b'],sl:['a','b'],d:[8,5],sv:v=>[v[0],v[1],v[0],v[1]],f:'K = 2 × (a + b)',w:'Sisi berhadapan sama panjang: a + b + a + b.'},
+ belahketupat:{n:'Belah Ketupat',e:'💠',pts:'70,8 125,50 70,92 15,50',lp:[[105,22],[105,82],[35,82],[35,22]],ls:['s','s','s','s'],sl:['s'],d:[6],sv:v=>[v[0],v[0],v[0],v[0]],f:'K = 4 × s',w:'Keempat sisinya sama panjang, jadi 4 × s.'},
+ layang:{n:'Layang-layang',e:'🪁',pts:'70,6 118,40 70,96 22,40',lp:[[102,16],[102,74],[38,74],[38,16]],ls:['a','b','b','a'],sl:['a','b'],d:[8,5],sv:v=>[v[0],v[1],v[1],v[0]],f:'K = 2 × (a + b)',w:'Ada dua pasang sisi sama panjang: a + a + b + b.'},
+ trapesium:{n:'Trapesium',e:'🛟',pts:'45,20 95,20 125,80 15,80',lp:[[70,14],[118,48],[70,94],[22,48]],ls:['a','b','c','d'],sl:['a','b','c','d'],d:[4,5,9,5],sv:v=>v,f:'K = a + b + c + d',w:'Sisinya tidak harus sama, jadi jumlahkan keempatnya.'},
+ lingkaran:{n:'Lingkaran',e:'⚪',circ:1,ls:['r'],sl:['r'],d:[7],f:'K = 2 × π × r',w:'Garis lengkung satu putaran = π × diameter = 2 × π × r (π ≈ 3,14 atau 22/7).'}
+};
+function draw(k,v){const s=SH[k];let h='<svg viewBox="0 0 140 100">';
+ if(s.circ){h+='<circle class="shp" cx="70" cy="50" r="38"/><line x1="70" y1="50" x2="108" y2="50" stroke="#06407d" stroke-width="2"/><circle cx="70" cy="50" r="2.5" fill="#06407d"/><text x="90" y="44">'+(v?'r = '+v[0]+' cm':'r')+'</text>';}
+ else{h+='<polygon class="shp" points="'+s.pts+'"/>';const sv=v?s.sv(v):s.ls;s.lp.forEach((p,i)=>h+='<text x="'+p[0]+'" y="'+p[1]+'">'+sv[i]+(v?' cm':'')+'</text>');}
+ return h+'</svg>';}
+function calc(k,v){return k=='lingkaran'?2*3.14*v[0]:SH[k].sv(v).reduce((a,b)=>a+b,0);}
+function expr(k,v){return k=='lingkaran'?'2 × 3,14 × '+v[0]+' = '+fmt(calc(k,v)):SH[k].sv(v).join(' + ')+' = '+fmt(calc(k,v));}
+/* nav */
+function go(n){cur=Math.max(0,Math.min(5,n));document.querySelectorAll('.slide').forEach((s,i)=>s.classList.toggle('on',i==cur));document.querySelectorAll('#dots i').forEach((d,i)=>d.classList.toggle('on',i==cur));scrollTo({top:0,behavior:'smooth'});if(cur==5)result();}
+function start(){name=$('#nm').value.trim();$('#hi').textContent=name?'Hai, '+name:'Hai, penjelajah';go(1);}
+/* materi */
+$('#mat').innerHTML=Object.keys(SH).map(k=>'<div class="fc" onclick="mnote(\''+k+'\',this)"><div style="font-weight:700">'+SH[k].e+' '+SH[k].n+'</div>'+draw(k)+'<div class="f">'+SH[k].f+'</div></div>').join('');
+function mnote(k,el){document.querySelectorAll('.fc').forEach(c=>c.classList.remove('hot'));el.classList.add('hot');$('#mnote').innerHTML='💡 <b>'+SH[k].n+':</b> '+SH[k].w;}
+/* lab */
+$('#chips').innerHTML=Object.keys(SH).map(k=>'<button class="chip" data-k="'+k+'" onclick="pick(\''+k+'\')">'+SH[k].e+' '+SH[k].n+'</button>').join('');
+function pick(k){labKey=k;labV=SH[k].d.slice();$('#gfb').textContent='';$('#guess').value='';
+ document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('sel',c.dataset.k==k));
+ $('#sliders').innerHTML=SH[k].sl.map((n,i)=>'<div style="margin-bottom:8px"><b>'+n+' = <span id="v'+i+'">'+labV[i]+'</span> cm</b><input type="range" min="1" max="12" value="'+labV[i]+'" oninput="sl('+i+',this.value)"></div>').join('');
+ upd();}
+function sl(i,x){labV[i]=+x;$('#v'+i).textContent=x;$('#gfb').textContent='';upd();}
+function upd(){$('#labsvg').outerHTML=draw(labKey,labV).replace('<svg','<svg id="labsvg"');$('#labres').innerHTML='🔒 Tebak dulu ya! Rumus: <span style="color:#0072e6">'+SH[labKey].f+'</span>';}
+function chk(){const g=parseFloat(($('#guess').value||'').replace(',','.'));if(isNaN(g)){$('#gfb').textContent='Tulis tebakanmu dulu ya! ✏️';return;}
+ const t=calc(labKey,labV),ok=Math.abs(g-t)<0.01;
+ $('#gfb').innerHTML=ok?'<span style="color:#0b8a4f">🎉 Tepat sekali'+(name?', '+name:'')+'!</span>':'<span style="color:#c24a00">🤔 Belum pas. Coba hitung lagi dengan rumusnya!</span>';
+ $('#labres').innerHTML='✅ K = '+expr(labKey,labV)+' cm';if(ok)boom();}
+pick('persegi');
+/* kuis */
+const Q=[
+['persegi',[7],'Cocokkan persegi bersisi 7 cm dengan kelilingnya!','28 cm',['14 cm','49 cm','21 cm'],'Persegi punya 4 sisi sama panjang. K = 4 × 7 = 28 cm. Angka 49 itu luas (7 × 7), bukan keliling.'],
+['persegipanjang',[9,4],'Cocokkan persegi panjang ini dengan kelilingnya!','26 cm',['36 cm','13 cm','22 cm'],'K = 2 × (p + l) = 2 × (9 + 4) = 26 cm. Angka 13 baru setengah keliling, dan 36 adalah luas.'],
+['segitiga',[5,6,7],'Cocokkan segitiga bersisi 5, 6, dan 7 cm dengan kelilingnya!','18 cm',['12 cm','21 cm','35 cm'],'Keliling segitiga = jumlah ketiga sisi: 5 + 6 + 7 = 18 cm.'],
+['jajargenjang',[8,5],'Cocokkan jajar genjang ini dengan kelilingnya!','26 cm',['13 cm','40 cm','21 cm'],'Sisi berhadapan sama panjang: 8 + 5 + 8 + 5 = 26 cm. Angka 40 berasal dari 8 × 5, itu bukan keliling.'],
+['belahketupat',[6],'Cocokkan belah ketupat bersisi 6 cm dengan kelilingnya!','24 cm',['12 cm','36 cm','18 cm'],'Belah ketupat punya 4 sisi sama panjang: K = 4 × 6 = 24 cm.'],
+['layang',[10,6],'Cocokkan layang-layang ini dengan kelilingnya!','32 cm',['16 cm','60 cm','26 cm'],'Ada dua pasang sisi sama panjang: K = 2 × (10 + 6) = 32 cm.'],
+['trapesium',[5,4,9,6],'Cocokkan trapesium ini dengan kelilingnya!','24 cm',['18 cm','20 cm','27 cm'],'Trapesium: jumlahkan keempat sisinya, 5 + 4 + 9 + 6 = 24 cm.'],
+['lingkaran',[7],'Cocokkan lingkaran berjari-jari 7 cm (π = 22/7) dengan kelilingnya!','44 cm',['22 cm','154 cm','49 cm'],'K = 2 × π × r = 2 × 22/7 × 7 = 44 cm. Angka 154 itu luas lingkaran, bukan keliling.'],
+['lingkaran',[10],'Cocokkan lingkaran berjari-jari 10 cm (π = 3,14) dengan kelilingnya!','62,8 cm',['31,4 cm','314 cm','20 cm'],'K = 2 × 3,14 × 10 = 62,8 cm. Angka 314 itu luas lingkaran, bukan keliling.'],
+['lingkaran',null,'Cocokkan bangun ini dengan rumus kelilingnya!','K = 2 × π × r',['K = π × r × r','K = 2 × (p + l)','K = 4 × s'],'Keliling lingkaran = 2 × π × r. Rumus π × r × r itu untuk luas, sedangkan 2 × (p + l) dan 4 × s untuk persegi panjang dan persegi.']
+];
+const PR=['Hebat sekali','Luar biasa','Pintar sekali','Keren','Mantap jiwa','Kamu jagoan matematika'];
+let qi=0,score=0,done=false,ans=false;
+function shuf(a){return a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);}
+function renderQ(){const q=Q[qi];ans=false;
+ $('#qn').textContent='Soal '+(qi+1)+' dari 10';$('#qs').textContent='⭐ '+score;$('#qb').style.width=(qi/10*100)+'%';
+ $('#qp').textContent='🔗 '+q[2];$('#qc').innerHTML=draw(q[0],q[1])+'<div style="font-weight:700">'+SH[q[0]].e+' '+SH[q[0]].n+'</div>';
+ $('#qo').innerHTML=shuf([q[3]].concat(q[4])).map(o=>'<button class="opt" data-o="'+o+'" onclick="pickA(this)">🐟 '+o+'</button>').join('');
+ $('#fb').className='fb';$('#qnext').style.display='none';$('#qnext').textContent=qi==9?'Lihat hasilku 🏆':'Soal berikutnya ➜';}
+function pickA(b){if(ans)return;ans=true;const q=Q[qi],ok=b.dataset.o==q[3];b.classList.add('link');
+ document.querySelectorAll('.opt').forEach(x=>{if(x.dataset.o==q[3])x.classList.add('ok');});
+ const fb=$('#fb');
+ if(ok){score++;b.classList.add('ok');fb.className='fb ok';fb.innerHTML='🌟 <b>'+PR[Math.floor(Math.random()*PR.length)]+(name?', '+name:'')+'!</b> Jawabanmu tepat, kamu berhasil mencocokkannya! 👏';boom();}
+ else{b.classList.add('no');fb.className='fb no';fb.innerHTML='💪 <b>Belum tepat, tidak apa-apa!</b><br>📖 Penjelasan: '+q[5];}
+ $('#qs').textContent='⭐ '+score;$('#qb').style.width=((qi+1)/10*100)+'%';$('#qnext').style.display='inline-block';}
+function nextQ(){if(qi==9){done=true;go(5);return;}qi++;renderQ();}
+function boom(){for(let i=0;i<14;i++){const c=document.createElement('div');c.className='confetti';c.textContent=['⭐','🫧','🐠','✨'][i%4];c.style.left=Math.random()*95+'vw';c.style.animationDelay=Math.random()*.6+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),3300);}}
+function retry(){qi=0;score=0;done=false;renderQ();go(4);}
+/* refleksi */
+function result(){const r=$('#rs');
+ if(!done){r.innerHTML='<h2>💭 Umpan Balik dan Refleksi</h2><div class="note">Selesaikan dulu kuis mencocokkannya ya'+(name?', '+name:'')+'! Setelah itu hasil dan refleksimu muncul di sini. 🐠</div><button onclick="go(4)">Ke Kuis 🎮</button>';return;}
+ const st=score>=9?'🌟🌟🌟':score>=6?'🌟🌟':'🌟';
+ const m=score>=9?'Luar biasa! Kamu Penguasa Samudra Keliling! 👑':score>=6?'Bagus sekali! Sedikit lagi kamu jadi Kapten Laut! ⚓':'Semangat! Setiap penjelajah hebat belajar dari ombak. Yuk coba lagi! 💪';
+ r.innerHTML='<h2>💭 Umpan Balik dan Refleksi</h2><div class="stars">'+st+'</div><div class="res">'+(name?name+', skormu: ':'Skormu: ')+score+' / 10</div><p style="font-size:19px;text-align:center;font-weight:600">'+m+'</p>'
+ +'<div class="note"><b>Renungkan yuk:</b><br>1. Apa yang paling kamu ingat tentang keliling?<br>2. Rumus bangun datar mana yang paling mudah bagimu? Mengapa?<br>3. Di mana kamu menemukan keliling dalam kehidupan sehari-hari?</div>'
+ +'<textarea rows="3" placeholder="Tulis jawabanmu di sini..."></textarea>'
+ +'<p style="font-weight:700;margin:14px 0 4px">Seberapa paham kamu sekarang?</p><div class="emo"><button onclick="emo(0)">😄 Paham banget</button><button onclick="emo(1)">🙂 Hampir paham</button><button onclick="emo(2)">🤔 Perlu belajar lagi</button></div><div class="note" id="en" style="display:none"></div>'
+ +'<div style="text-align:center"><button class="alt" onclick="retry()">Main kuis lagi 🔄</button></div>';
+ boom();}
+function emo(i){const e=$('#en');e.style.display='block';e.textContent=['Hebat! Coba ajari temanmu tentang rumus keliling supaya makin jago. 🐬','Bagus! Buka lagi Materi dan Aktivitas, lalu coba kuis sekali lagi ya. 🐢','Tidak apa-apa! Ayo ulangi Laboratorium Laut, geser sisinya dan amati hasilnya. 🦀'][i];}
+renderQ();
+/* dekorasi laut */
+(function(){const s=$('#sea');['🐠','🐟','🐬','🐢','🐡','🦀'].forEach((f,i)=>{const d=document.createElement('div');d.className='fish';d.style.top=(8+i*13)+'%';d.style.animationDuration=(22+i*5)+'s';d.style.animationDelay=(-i*6)+'s';d.innerHTML='<i>'+f+'</i>';s.appendChild(d);});
+ for(let i=0;i<14;i++){const b=document.createElement('div');b.className='bub';const z=8+Math.random()*22;b.style.cssText='width:'+z+'px;height:'+z+'px;left:'+Math.random()*100+'%;animation-duration:'+(8+Math.random()*10)+'s;animation-delay:'+(-Math.random()*12)+'s';s.appendChild(b);}})();
+</script>
+</body>
+</html>
